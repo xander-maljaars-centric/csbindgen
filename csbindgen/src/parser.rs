@@ -650,6 +650,8 @@ fn parse_type_path(t: &syn::TypePath) -> RustType {
                     type_name: "Box".to_string(),
                     type_kind: TypeKind::Pointer(PointerType::Box, Box::new(rust_type)),
                 };
+            } else if last_segment.ident == "MaybeUninit" {
+                return rust_type;
             }
         }
     }
