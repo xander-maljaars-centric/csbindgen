@@ -14,6 +14,8 @@ on:
 
 jobs:
   build-and-push-rust:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -46,6 +48,8 @@ jobs:
 
   build-dotnet:
     needs: [build-and-push-rust]
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -67,6 +71,8 @@ jobs:
 
   create-release:
     needs: [build-dotnet, build-and-push-rust]
+    permissions:
+      contents: write
     uses: Cysharp/Actions/.github/workflows/create-release.yaml@main
     with:
       commit-id: ''

@@ -11,6 +11,8 @@ on:
 
 jobs:
   build-rust:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -18,7 +20,10 @@ jobs:
       - run: cargo build --verbose
       - run: cargo test update_package_version -- 1.0.0 --nocapture
       - run: cargo test
+
   build-dotnet:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
