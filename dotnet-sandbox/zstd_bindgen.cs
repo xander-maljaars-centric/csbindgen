@@ -16,6 +16,8 @@ namespace CsBindgen
 
 
 
+
+
         /// <summary>
         ///  ZSTD_versionNumber() :
         ///   Return runtime library version, the value is (MAJOR*100*100 + MINOR*100 + RELEASE).
