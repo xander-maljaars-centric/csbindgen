@@ -90,26 +90,42 @@ pub fn emit_csharp(
     let method_prefix = &options.csharp_method_prefix;
     let accessibility = &options.csharp_class_accessibility;
 
-    let mut dll_name = match options.csharp_if_symbol.as_str() {
-        "" => format!(
+    let dll_name = if options.csharp_disable_emit_dll_name {
+        "".to_string()
+    } else if options.csharp_if_dll_imports.is_empty() {
+        format!(
             "        const string __DllName = \"{}\";",
             options.csharp_dll_name
-        ),
-        _ => {
-            format!(
-                "#if {0}
-        const string __DllName = \"{1}\";
-#else
-        const string __DllName = \"{2}\";
-#endif
-        ",
-                options.csharp_if_symbol, options.csharp_if_dll_name, options.csharp_dll_name
-            )
+        )
+    } else {
+        let mut s = String::new();
+        for (i, pair) in options.csharp_if_dll_imports.iter().enumerate() {
+            let (if_symbol, if_dll_name) = pair;
+            if i == 0 {
+                s.push_str(
+                    format!(
+                        "#if {if_symbol}\n        const string __DllName = \"{if_dll_name}\";\n"
+                    )
+                    .as_str(),
+                );
+            } else {
+                s.push_str(
+                    format!(
+                        "#elif {if_symbol}\n        const string __DllName = \"{if_dll_name}\";\n"
+                    )
+                    .as_str(),
+                );
+            }
         }
+        s.push_str(
+            format!(
+                "#else\n        const string __DllName = \"{}\";\n#endif\n        ",
+                options.csharp_dll_name
+            )
+            .as_str(),
+        );
+        s
     };
-    if options.csharp_disable_emit_dll_name {
-        dll_name = "".to_string();
-    }
 
     let mut method_list_string = String::new();
     let mut delegate_list = Vec::new();
