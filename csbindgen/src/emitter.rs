@@ -146,6 +146,7 @@ pub fn emit_csharp(
             "" => format!("{method_prefix}{entry_point}"),
             x => format!("{x}{entry_point}"),
         };
+        let call_conv = &item.call_conv;
         let return_type = match &item.return_type {
             Some(x) => x.to_csharp_string(
                 options,
@@ -184,7 +185,7 @@ pub fn emit_csharp(
         }
 
         method_list_string.push_str_ln(
-            format!("        [DllImport(__DllName, EntryPoint = \"{entry_point}\", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]").as_str(),
+            format!("        [DllImport(__DllName, EntryPoint = \"{entry_point}\", CallingConvention = CallingConvention.{call_conv}, ExactSpelling = true)]").as_str(),
         );
         if return_type == "bool" {
             method_list_string.push_str_ln("        [return: MarshalAs(UnmanagedType.U1)]");
