@@ -76,12 +76,15 @@ fn parse_method(item: FnItem, options: &BindgenOptions) -> Option<ExternMethod> 
     };
 
     let method_name = sig.ident.to_string();
+
+    let is_x86_windows = std::env::var("CARGO_CFG_TARGET_ARCH").is_ok_and(|v| v == "x86")
+        && std::env::var("CARGO_CFG_TARGET_OS").is_ok_and(|v| v == "windows");
     let call_conv = if let Some(abi) = sig.abi.map(|abi| abi.name).flatten() {
         let abi_str = &abi.value();
         if abi_str.contains("system") {
             // For i686-pc-windows-* (32-bit binaries) the default calling convention is stdcall, unlike everywhere else.
             // See https://doc.rust-lang.org/reference/items/external-blocks.html#abi for a list of possible ABIs and what they translate to.
-            if cfg!(all(target_arch = "x86", windows)) {"StdCall"}
+            if is_x86_windows {"StdCall"}
             else {"Cdecl"}
         }
         else if abi_str.contains("stdcall") {"StdCall"}
