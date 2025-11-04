@@ -44,6 +44,7 @@ pub struct ExternMethod {
     pub parameters: Vec<Parameter>,
     pub return_type: Option<RustType>,
     pub export_naming: ExportSymbolNaming,
+    pub call_conv: String,
 }
 
 #[derive(Clone, Debug)]
