@@ -103,6 +103,10 @@ fn parse_method(item: FnItem, options: &BindgenOptions) -> Option<ExternMethod> 
             eprintln!("sysv64 is the calling convention for AMD64 non-windows, consider using \"system\" instead.");
             panic!("Cannot emit `sysv64` on non-AMD64 and/or windows target.");
         }
+        else if abi_str.contains("aapcs") {
+            eprintln!("ARM is an extremely complex landscape and not all possible combinations can be checked. Emitting at the user's risk.");
+            "WinApi"
+        }
         else if abi_str.contains("C") || abi_str.contains("cdecl") || abi_str.contains("win64") || abi_str.contains("sysv64") || abi_str.contains("aapcs") {"Cdecl"}
         else {
             // This is only ever hit for the `Rust`, `fastcall`, and `efiapi` calling conventions, none of which are supported by C# (as of .NET 9)
