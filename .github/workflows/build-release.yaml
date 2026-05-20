@@ -30,10 +30,12 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git commit -m "Update cargo.toml version to ${{ inputs.tag }}" -a
       - run: cargo publish --manifest-path csbindgen/Cargo.toml
+        if: ${{ !inputs.dry-run }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
       - run: git tag ${{ inputs.tag }}
       - name: Push changes
+        if: ${{ !inputs.dry-run }}
         uses: ad-m/github-push-action@77c5b412c50b723d2a4fbc6d71fb5723bcd439aa
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
