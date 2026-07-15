@@ -618,7 +618,22 @@ fn parse_type(t: &syn::Type) -> RustType {
                 }
             };
 
-            let type_name = parse_type(&t.elem).type_name; // maybe ok, only retrieve type_name
+            let elem_type = parse_type(&t.elem);
+
+            // ensure that multi-dimensional arrays aren't messing up the alignment of a struct
+            // even though they will be exported as a flattened 1d array
+            if let RustType {
+                type_name: _,
+                type_kind: TypeKind::FixedArray(elem_digits, _),
+            } = elem_type
+            {
+                let outer_digits: usize = digits.parse().unwrap();
+                let elem_digits: usize = elem_digits.parse().unwrap();
+                digits = (outer_digits * elem_digits).to_string();
+            }
+
+            let type_name = elem_type.type_name;
+
             return RustType {
                 type_name,
                 type_kind: TypeKind::FixedArray(digits, None),
